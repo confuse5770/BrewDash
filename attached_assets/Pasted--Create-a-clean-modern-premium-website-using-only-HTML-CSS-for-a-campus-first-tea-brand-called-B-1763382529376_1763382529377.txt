@@ -1,0 +1,301 @@
+“Create a clean, modern, premium website using only HTML + CSS for a campus-first tea brand called BrewDash.
+
+Use this brand style based on the logo:
+
+Navy Blue: #153A68 (primary)
+
+Teal Green: #29B7A6 (accent)
+
+White background
+
+Soft shadows
+
+Rounded corners
+
+Clean sans-serif font
+
+Plenty of spacing
+
+Buttons in navy + teal
+
+Use the same visual style as the provided BrewDash cup image:
+
+White base
+
+Navy lid → use navy headers
+
+Teal accent → use teal for highlights
+
+Logo style → bold + modern + friendly
+
+The website should feel youthful, campus-friendly, premium, minimal, inspired by the BrewDash cup mockup.
+
+⭐ STRUCTURE REQUIRED
+
+Build the following sections in order:
+
+1. Header (Sticky)
+
+Elements:
+
+Left: BrewDash logo placeholder (use text for now: “BrewDash”)
+
+Right navigation:
+
+Home
+
+Menu
+
+Offers
+
+Subscriptions
+
+Contact
+
+Style:
+
+White background
+
+Navy text
+
+Slight shadow
+
+Clean spacing
+
+2. Hero Section
+
+Full-width, clean hero with:
+
+Heading (big, bold):
+“BrewDash — Great Tea for Great Minds.”
+
+Subheading:
+“Fresh tea, tribal flavours & campus vibes.”
+
+Buttons:
+
+See Menu (teal background, white text)
+
+Buy Pass (navy background, white text)
+
+Right side:
+
+Placeholder image of a steaming cup OR tea illustration.
+
+Background:
+
+Very light cream/white
+
+Soft shadows around content
+
+3. Value Proposition
+
+Centered text:
+
+Headline:
+“Fresh, strong tea for great minds.”
+
+Subline:
+“Campus-first tea brand with tribal flavours, premium cups, and smart daily offers.”
+
+4. Vision & Mission (Two-Column Grid)
+
+Left Column — Vision:
+“To become India’s most loved campus tea brand.”
+
+Right Column — Mission:
+“To serve affordable, high-quality tea with culture, convenience, and community.”
+
+Cards should have:
+
+White background
+
+Soft teal borders
+
+Rounded corners
+
+Shadow
+
+5. About BrewDash (Short Section)
+
+Paragraph:
+
+“BrewDash brings the taste of local tea and tribal traditions to university campuses. We serve honest tea, fresh ingredients, jaggery-based tribal blends, and student-friendly pricing.”
+
+6. Tea Menu Section
+
+Title: Tea Menu
+
+Create a 4-card grid with soft shadows:
+
+Tea — ₹10
+
+Kulhad Tea — ₹20
+
+Premium Chini Cup — ₹25
+
+Tribal Ada Tea — ₹35
+Ginger + jaggery, no milk
+
+Use:
+
+Navy text
+
+Teal highlights
+
+Rounded cards
+
+7. Offers Section
+
+Three cards, inline or grid:
+
+Rush Hour – 10% OFF
+4–6 PM daily
+
+Educators’ Appreciation – 20% OFF
+For professors & staff
+
+Founders’ Fuel – 30% OFF
+For startup founders
+
+Icons:
+
+Flame
+
+Graduation cap
+
+Startup rocket
+
+Style:
+
+Teal icons
+
+White cards
+
+Soft shadow
+
+8. Subscriptions Section
+
+Title: Tea Pass Subscription
+
+Three cards:
+
+Weekly Basic — ₹49
+
+Weekly Kulhad — ₹99
+
+Monthly Premium — ₹499
+
+Include:
+
+Input field: “Enter email or phone”
+
+Button: Get Pass (teal)
+
+9. Why BrewDash (USPs)
+
+Bullet list:
+
+Freshly brewed every cup
+
+Affordable pricing
+
+Signature Tribal Ada Tea
+
+Premium cups & kulhads
+
+Fast campus delivery
+
+Hygienic modern kiosk
+
+10. Brand Story
+
+Short paragraph:
+
+“BrewDash was started by a tribal founder to bring authentic jaggery–ginger Ada tea to students across India. What began as a small idea became a movement to serve better tea, better culture, and better community.”
+
+11. Target Audience Section
+
+Simple 4-icon grid:
+
+Students
+
+Professors
+
+Founders
+
+Tea lovers
+
+Icons in teal.
+
+12. Call-To-Action Strip
+
+Full-width navy section with white text:
+
+Buttons:
+
+See Menu
+
+Try Tribal Ada Tea
+
+Buy Tea Pass
+
+Rounded buttons with hover effect.
+
+13. Footer
+
+Footer elements:
+
+“BrewDash — Great Tea for Great Minds.”
+
+Location: Near DU Gate
+
+Timings: 8 AM – 9 PM
+
+Links: Instagram, WhatsApp, Google Maps
+
+Copyright line
+
+Footer background:
+
+Navy
+
+White text
+
+Teal icons
+
+⭐ IMPORTANT CODING REQUIREMENTS
+
+Do NOT use JavaScript. Only HTML + CSS.
+
+Use flexbox + css grid for layout.
+
+Use Google Fonts (Poppins / Inter / Nunito).
+
+Use CSS variables for color theme.
+
+Make everything responsive for mobile, tablet, desktop.
+
+Use clean, readable CSS.
+
+Add hover animations using transition: 0.3s.
+
+Buttons must be rounded.
+
+Cards must have box-shadow.
+
+Make the UI minimal and premium.
+
+⭐ OUTPUT FORMAT (VERY IMPORTANT)
+
+👉 Produce one single HTML file with:
+
+<style> block for CSS
+
+Proper sections
+
+Clean comments
+
+Responsive design
+
+No JavaScript. No external libraries (except Google Fonts).
