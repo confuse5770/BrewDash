@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrewDash App</title>
+
+<style>
+  body{
+    margin:0;
+    font-family:Poppins, sans-serif;
+    background:#f7f7f7;
+    color:#153A68;
+  }
+
+  .app {
+    max-width:430px;
+    margin:auto;
+    height:100vh;
+    background:white;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 0 40px rgba(0,0,0,0.1);
+  }
+
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 16px;
+    background:white;
+    border-bottom:1px solid rgba(0,0,0,0.1);
+  }
+
+  .brand-title{
+    font-weight:700;
+    font-size:18px;
+  }
+
+  .chip{
+    padding:6px 12px;
+    background:#29B7A6;
+    color:white;
+    border-radius:20px;
+    font-size:12px;
+    cursor:pointer;
+  }
+
+  /* Screens container */
+  .screens{
+    flex:1;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .screen{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    padding:16px;
+    overflow-y:auto;
+    background:white;
+    transform:translateX(100%);
+    opacity:0;
+    transition:0.35s ease;
+  }
+
+  .screen.active{
+    transform:translateX(0);
+    opacity:1;
+    z-index:5;
+  }
+
+  .screen.exit-left{
+    transform:translateX(-100%);
+    opacity:0;
+  }
+
+  /* MENU CARDS */
+  .card{
+    background:white;
+    padding:14px;
+    border-radius:12px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.07);
+    margin-bottom:12px;
+  }
+
+  .row { display:flex; justify-content:space-between; align-items:center; }
+  .title{ font-weight:700; }
+  .price{ font-weight:800; color:#153A68; }
+
+  /* Bottom Navigation */
+  .bottom-nav{
+    height:70px;
+    background:white;
+    border-top:1px solid rgba(0,0,0,0.1);
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+  }
+
+  .nav-btn{
+    text-align:center;
+    font-size:12px;
+    cursor:pointer;
+    color:#6b7280;
+  }
+
+  .nav-btn.active{
+    color:#153A68;
+    font-weight:700;
+  }
+
+  .nav-btn div{ font-size:20px; }
+
+  /* Buttons */
+  .btn{
+    padding:10px 14px;
+    border-radius:8px;
+    background:#29B7A6;
+    color:white;
+    display:inline-block;
+    font-weight:600;
+    margin-top:8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="brand-title">BrewDash</div>
+    <div class="chip" onclick="openScreen('campus')">Campus Favourite</div>
+  </div>
+
+  <!-- SCREENS -->
+  <div class="screens">
+
+    <!-- HOME -->
+    <div class="screen active" id="home">
+      <h2>Great Tea for Great Minds ☕</h2>
+      <p>Fresh, strong tea with tribal flavours.</p>
+
+      <div class="btn" onclick="openScreen('menu')">See Menu</div>
+      <div class="btn" onclick="openScreen('pass')">Buy Pass</div>
+    </div>
+
+    <!-- CAMPUS -->
+    <div class="screen" id="campus">
+      <h2>Campus Favourites</h2>
+      <div class="card"><div class="row"><div class="title">Tribal Ada Tea</div><div class="price">₹35</div></div></div>
+      <div class="card"><div class="row"><div class="title">Chini Cup</div><div class="price">₹25</div></div></div>
+    </div>
+
+    <!-- MENU -->
+    <div class="screen" id="menu">
+      <h2>Menu</h2>
+
+      <div class="card">
+        <div class="row"><div class="title">Tea</div><div class="price">₹10</div></div>
+      </div>
+
+      <div class="card">
+        <div class="row"><div class="title">Kulhad Tea</div><div class="price">₹20</div></div>
+      </div>
+
+      <div class="card">
+        <div class="row"><div class="title">Chini Cup</div><div class="price">₹25</div></div>
+      </div>
+
+      <div class="card">
+        <div class="row"><div class="title">Tribal Ada Tea</div><div class="price">₹35</div></div>
+      </div>
+    </div>
+
+    <!-- OFFERS -->
+    <div class="screen" id="offers">
+      <h2>Offers</h2>
+      <div class="card"><div>🔥 Rush Hour — 10% OFF (4–6 PM)</div></div>
+      <div class="card"><div>🎓 Professors — 20% OFF</div></div>
+      <div class="card"><div>🚀 Founders — 30% OFF</div></div>
+    </div>
+
+    <!-- PASS -->
+    <div class="screen" id="pass">
+      <h2>Tea Pass</h2>
+      <div class="card"><div class="row"><div>Weekly Basic</div><div class="price">₹49</div></div></div>
+      <div class="card"><div class="row"><div>Weekly Kulhad</div><div class="price">₹99</div></div></div>
+      <div class="card"><div class="row"><div>Monthly Premium</div><div class="price">₹499</div></div></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="screen" id="profile">
+      <h2>User Profile</h2>
+      <p>Guest user mode</p>
+    </div>
+
+  </div> <!-- screens end -->
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="nav-btn active" onclick="openScreen('home')"><div>🏠</div>Home</div>
+    <div class="nav-btn" onclick="openScreen('menu')"><div>📜</div>Menu</div>
+    <div class="nav-btn" onclick="openScreen('offers')"><div>🔥</div>Offers</div>
+    <div class="nav-btn" onclick="openScreen('pass')"><div>🎫</div>Pass</div>
+    <div class="nav-btn" onclick="openScreen('profile')"><div>👤</div>Profile</div>
+  </div>
+
+</div>
+
+<script>
+function openScreen(id){
+  document.querySelectorAll(".screen").forEach(s => {
+    s.classList.remove("active","exit-left");
+  });
+
+  document.querySelectorAll(".nav-btn").forEach(n => n.classList.remove("active"));
+
+  document.getElementById(id).classList.add("active");
+  
+  // highlight nav button
+  document.querySelectorAll(".nav-btn").forEach(btn=>{
+    if(btn.innerText.toLowerCase().includes(id)) btn.classList.add("active");
+  });
+}
+</script>
+
+</body>
+</html>
