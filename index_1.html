@@ -1,231 +1,658 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BrewDash App</title>
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BrewDash — App Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  body{
-    margin:0;
-    font-family:Poppins, sans-serif;
-    background:#f7f7f7;
-    color:#153A68;
+  :root{
+    --navy:#0f3356; /* slightly darker for cinematic */
+    --navy-2:#153A68;
+    --teal:#29B7A6;
+    --bg:#F7F8FA;
+    --card:#FFFFFF;
+    --muted:#6b7280;
+    --glass: rgba(255,255,255,0.6);
+    --radius:16px;
+    --shadow-sm: 0 6px 18px rgba(15,51,86,0.08);
+    --shadow-lg: 0 20px 48px rgba(15,51,86,0.16);
+    --tab-height:72px;
   }
 
-  .app {
-    max-width:430px;
-    margin:auto;
-    height:100vh;
-    background:white;
-    display:flex;
-    flex-direction:column;
-    box-shadow:0 0 40px rgba(0,0,0,0.1);
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg),#fff);color:var(--navy-2);-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+
+  /* ======================
+     Cinematic Splash (full screen overlay)
+     ====================== */
+  .splash {
+    position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(180deg,var(--navy),#071726);z-index:9999;transition:opacity .6s ease;
+  }
+  .splash.hidden{opacity:0;pointer-events:none}
+  .splash-inner{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .logo-wrap{width:160px;height:160px;border-radius:24px;background:linear-gradient(180deg,#0b2440,#122d4b);display:grid;place-items:center;box-shadow:0 22px 60px rgba(10,22,40,0.6)}
+  .logo-mark{width:92px;height:92px}
+  .logo-glow{width:180px;height:180px;border-radius:36px;background:radial-gradient(rgba(41,183,166,0.18), rgba(21,58,104,0));filter:blur(22px);position:absolute;opacity:0;transform:scale(.9);animation:glow 1.6s ease-in-out infinite alternate}
+  @keyframes glow{from{opacity:.35;transform:scale(.92)}to{opacity:.7;transform:scale(1.04)}}
+  .tagline{color:white;font-weight:600;font-size:1.05rem;letter-spacing:.2px;opacity:0;transform:translateY(8px);transition:all .6s cubic-bezier(.2,.9,.2,1)}
+  .steam-svg{width:140px;height:120px;opacity:0;transform:translateY(6px);transition:all .6s .1s cubic-bezier(.2,.9,.2,1)}
+  .splash.show .tagline{opacity:1;transform:translateY(0)}
+  .splash.show .steam-svg{opacity:1;transform:translateY(0)}
+  .splash .loading-dots{display:flex;gap:6px;margin-top:6px}
+  .splash .loading-dots span{width:8px;height:8px;background:white;border-radius:999px;opacity:.15;animation:dot 1s infinite;}
+  .splash .loading-dots span:nth-child(1){animation-delay:0s}
+  .splash .loading-dots span:nth-child(2){animation-delay:.15s}
+  .splash .loading-dots span:nth-child(3){animation-delay:.3s}
+  @keyframes dot{0%{opacity:.12;transform:translateY(0)}50%{opacity:1;transform:translateY(-8px)}100%{opacity:.12;transform:translateY(0)}}
+
+  /* ======================
+     App Frame (centered mobile feel)
+     ====================== */
+  .app-wrap{display:flex;align-items:center;justify-content:center;padding:14px}
+  .app{
+    width:100%;max-width:460px;height:calc(100svh - 28px);border-radius:22px;overflow:hidden;box-shadow:var(--shadow-lg);background:linear-gradient(180deg,#fff,#fbfdff);border:1px solid rgba(21,58,104,0.04);position:relative;display:flex;flex-direction:column;
   }
 
-  .topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px 16px;
-    background:white;
-    border-bottom:1px solid rgba(0,0,0,0.1);
-  }
+  /* Topbar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(21,58,104,0.03);background:linear-gradient(180deg,rgba(255,255,255,0.96),rgba(255,255,255,0.9))}
+  .brand{display:flex;gap:10px;align-items:center}
+  .logo-small{width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#fff,#f3faf8);display:grid;place-items:center;box-shadow:var(--shadow-sm)}
+  .brand h1{font-size:1rem;margin:0;font-weight:700}
+  .brand small{display:block;color:var(--teal);font-weight:600;font-size:0.72rem;margin-top:-2px}
 
-  .brand-title{
-    font-weight:700;
-    font-size:18px;
-  }
-
-  .chip{
-    padding:6px 12px;
-    background:#29B7A6;
-    color:white;
-    border-radius:20px;
-    font-size:12px;
-    cursor:pointer;
-  }
+  .top-actions{display:flex;gap:8px;align-items:center}
+  .chip{padding:8px 12px;border-radius:999px;background:linear-gradient(90deg,var(--teal),#19b59f);color:white;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,0.06)}
 
   /* Screens container */
-  .screens{
-    flex:1;
-    position:relative;
-    overflow:hidden;
-  }
+  .screens{position:relative;flex:1;overflow:hidden;background:transparent}
+  .screen{position:absolute;inset:0;padding:16px 16px calc(var(--tab-height) + 28px);overflow:auto;transform:translateX(8px);opacity:0;transition:transform .42s cubic-bezier(.2,.9,.2,1),opacity .28s;pointer-events:none}
+  .screen.active{transform:none;opacity:1;pointer-events:auto;z-index:2}
 
-  .screen{
-    position:absolute;
-    top:0; left:0;
-    width:100%; height:100%;
-    padding:16px;
-    overflow-y:auto;
-    background:white;
-    transform:translateX(100%);
-    opacity:0;
-    transition:0.35s ease;
-  }
+  /* Generic cards & lists */
+  .card{background:var(--card);padding:12px;border-radius:12px;box-shadow:var(--shadow-sm);margin-bottom:12px}
+  .title{font-weight:700}
+  .muted{color:var(--muted)}
+  .row{display:flex;justify-content:space-between;align-items:center}
+  .price{font-weight:800;color:var(--navy-2)}
 
-  .screen.active{
-    transform:translateX(0);
-    opacity:1;
-    z-index:5;
-  }
+  /* HERO (home) */
+  .hero{display:flex;gap:12px;align-items:center;padding:14px;border-radius:14px;background:linear-gradient(180deg,rgba(41,183,166,0.03),rgba(21,58,104,0.01));box-shadow:var(--shadow-sm);margin-bottom:12px}
+  .hero .left{flex:1}
+  .hero .left h2{margin:0;font-size:1.15rem}
+  .hero .left p{margin:8px 0;color:var(--muted)}
+  .hero .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .btn{background:linear-gradient(90deg,var(--teal),#19b59f);color:white;padding:10px 14px;border-radius:12px;font-weight:700;display:inline-block;cursor:pointer}
+  .btn.alt{background:transparent;border:1.4px solid rgba(21,58,104,0.06);color:var(--navy-2);font-weight:700}
 
-  .screen.exit-left{
-    transform:translateX(-100%);
-    opacity:0;
-  }
+  .hero-art{width:110px;flex:0 0 110px;display:grid;place-items:center}
+  .cup-blob{width:86px;height:86px;border-radius:16px;background:linear-gradient(180deg,#fff,#fbffff);display:grid;place-items:center;box-shadow:0 12px 30px rgba(21,58,104,0.08)}
 
-  /* MENU CARDS */
-  .card{
-    background:white;
-    padding:14px;
-    border-radius:12px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.07);
-    margin-bottom:12px;
-  }
+  /* Menu grid */
+  .menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .menu-card{padding:12px;border-radius:12px;background:linear-gradient(180deg,var(--card),#fff);box-shadow:var(--shadow-sm);transition:transform .22s,box-shadow .22s}
+  .menu-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+  .menu-card .meta{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .badge{padding:6px 8px;border-radius:8px;background:rgba(41,183,166,0.08);color:var(--teal);font-weight:700;font-size:12px}
 
-  .row { display:flex; justify-content:space-between; align-items:center; }
-  .title{ font-weight:700; }
-  .price{ font-weight:800; color:#153A68; }
+  /* offers list */
+  .offers-grid{display:grid;gap:10px}
 
-  /* Bottom Navigation */
-  .bottom-nav{
-    height:70px;
-    background:white;
-    border-top:1px solid rgba(0,0,0,0.1);
-    display:flex;
-    justify-content:space-around;
-    align-items:center;
-  }
+  /* subscriptions */
+  .subs-row{display:flex;gap:10px;overflow:auto;padding-bottom:6px}
+  .sub-pill{min-width:150px;background:linear-gradient(180deg,#fff,#fcfffb);padding:12px;border-radius:12px;box-shadow:var(--shadow-sm)}
 
-  .nav-btn{
-    text-align:center;
-    font-size:12px;
-    cursor:pointer;
-    color:#6b7280;
-  }
+  /* reviews */
+  .stars{color:#f59e0b;font-weight:800}
 
-  .nav-btn.active{
-    color:#153A68;
-    font-weight:700;
-  }
+  /* profile */
+  .profile-grid{display:grid;gap:10px}
+  .profile-top{display:flex;gap:12px;align-items:center}
+  .avatar{width:64px;height:64px;border-radius:12px;background:linear-gradient(180deg,var(--teal),#19b59f);display:grid;place-items:center;color:white;font-weight:800}
 
-  .nav-btn div{ font-size:20px; }
+  /* bottom nav & FAB */
+  .fab{position:fixed;right:calc(50% - 200px);bottom:calc(var(--tab-height) + 34px);width:64px;height:64px;border-radius:16px;background:linear-gradient(90deg,var(--teal),#16a88f);display:grid;place-items:center;color:white;font-weight:900;box-shadow:0 22px 44px rgba(41,183,166,0.18);z-index:50;cursor:pointer}
+  @media(min-width:520px){.fab{right:calc((100% - 460px)/2 + 20px)}}
 
-  /* Buttons */
-  .btn{
-    padding:10px 14px;
-    border-radius:8px;
-    background:#29B7A6;
-    color:white;
-    display:inline-block;
-    font-weight:600;
-    margin-top:8px;
-  }
+  .bottom-wrap{position:absolute;left:0;right:0;bottom:0;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,255,255,0.99));border-top:1px solid rgba(21,58,104,0.03)}
+  .bottom-nav{height:var(--tab-height);display:flex;align-items:center;justify-content:space-around;gap:8px}
+  .tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--muted);cursor:pointer;padding:8px;border-radius:12px;transition:all .18s}
+  .tab.active{color:var(--navy-2);font-weight:800}
+  .dot{width:6px;height:6px;border-radius:999px;background:transparent;transition:background .18s}
+  .tab.active .dot{background:var(--teal)}
+
+  /* search bar */
+  .search{display:flex;gap:8px;align-items:center;padding:8px;border-radius:12px;border:1px solid rgba(21,58,104,0.04);background:#fff;margin-bottom:12px}
+  .search input{border:0;outline:none;flex:1;font-size:0.95rem}
+
+  /* small responsive tweaks */
+  @media(min-width:820px){.app{max-width:520px;border-radius:28px}.hero-art{width:130px;flex:0 0 130px}}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 
-<div class="app">
+<!-- Cinematic Splash: three-stage -->
+<div id="splash" class="splash">
+  <div class="splash-inner" aria-hidden="false">
+    <div style="position:relative;">
+      <div class="logo-glow" aria-hidden="true" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);"></div>
+      <div class="logo-wrap" aria-hidden="true">
+        <!-- BrewDash mark -->
+        <svg class="logo-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="L1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#29B7A6"/><stop offset="1" stop-color="#1fb79f"/></linearGradient>
+            <linearGradient id="L2" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#173a5f"/><stop offset="1" stop-color="#153A68"/></linearGradient>
+          </defs>
+          <rect x="14" y="34" width="92" height="48" rx="12" fill="#fff" stroke="#eef6f8"/>
+          <rect x="28" y="46" width="64" height="28" rx="8" fill="url(#L2)"/>
+          <rect x="20" y="26" width="80" height="12" rx="6" fill="url(#L1)"/>
+          <circle cx="70" cy="68" r="10" fill="#fff"/>
+        </svg>
+      </div>
+    </div>
 
-  <!-- TOP BAR -->
-  <div class="topbar">
-    <div class="brand-title">BrewDash</div>
-    <div class="chip" onclick="openScreen('campus')">Campus Favourite</div>
+    <div class="tagline" id="splash-tag">Great Tea. Great Minds.</div>
+
+    <!-- decorative steam -->
+    <svg class="steam-svg" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-linecap="round">
+        <path d="M24 60c6-16 0-28 8-36" opacity="0.9" style="filter:blur(2px)"></path>
+        <path d="M48 60c6-16 0-28 8-36" opacity="0.7" style="filter:blur(2px)"></path>
+        <path d="M72 60c6-16 0-28 8-36" opacity="0.6" style="filter:blur(2px)"></path>
+      </g>
+    </svg>
+
+    <div class="loading-dots" aria-hidden="true"><span></span><span></span><span></span></div>
   </div>
-
-  <!-- SCREENS -->
-  <div class="screens">
-
-    <!-- HOME -->
-    <div class="screen active" id="home">
-      <h2>Great Tea for Great Minds ☕</h2>
-      <p>Fresh, strong tea with tribal flavours.</p>
-
-      <div class="btn" onclick="openScreen('menu')">See Menu</div>
-      <div class="btn" onclick="openScreen('pass')">Buy Pass</div>
-    </div>
-
-    <!-- CAMPUS -->
-    <div class="screen" id="campus">
-      <h2>Campus Favourites</h2>
-      <div class="card"><div class="row"><div class="title">Tribal Ada Tea</div><div class="price">₹35</div></div></div>
-      <div class="card"><div class="row"><div class="title">Chini Cup</div><div class="price">₹25</div></div></div>
-    </div>
-
-    <!-- MENU -->
-    <div class="screen" id="menu">
-      <h2>Menu</h2>
-
-      <div class="card">
-        <div class="row"><div class="title">Tea</div><div class="price">₹10</div></div>
-      </div>
-
-      <div class="card">
-        <div class="row"><div class="title">Kulhad Tea</div><div class="price">₹20</div></div>
-      </div>
-
-      <div class="card">
-        <div class="row"><div class="title">Chini Cup</div><div class="price">₹25</div></div>
-      </div>
-
-      <div class="card">
-        <div class="row"><div class="title">Tribal Ada Tea</div><div class="price">₹35</div></div>
-      </div>
-    </div>
-
-    <!-- OFFERS -->
-    <div class="screen" id="offers">
-      <h2>Offers</h2>
-      <div class="card"><div>🔥 Rush Hour — 10% OFF (4–6 PM)</div></div>
-      <div class="card"><div>🎓 Professors — 20% OFF</div></div>
-      <div class="card"><div>🚀 Founders — 30% OFF</div></div>
-    </div>
-
-    <!-- PASS -->
-    <div class="screen" id="pass">
-      <h2>Tea Pass</h2>
-      <div class="card"><div class="row"><div>Weekly Basic</div><div class="price">₹49</div></div></div>
-      <div class="card"><div class="row"><div>Weekly Kulhad</div><div class="price">₹99</div></div></div>
-      <div class="card"><div class="row"><div>Monthly Premium</div><div class="price">₹499</div></div></div>
-    </div>
-
-    <!-- PROFILE -->
-    <div class="screen" id="profile">
-      <h2>User Profile</h2>
-      <p>Guest user mode</p>
-    </div>
-
-  </div> <!-- screens end -->
-
-  <!-- BOTTOM NAV -->
-  <div class="bottom-nav">
-    <div class="nav-btn active" onclick="openScreen('home')"><div>🏠</div>Home</div>
-    <div class="nav-btn" onclick="openScreen('menu')"><div>📜</div>Menu</div>
-    <div class="nav-btn" onclick="openScreen('offers')"><div>🔥</div>Offers</div>
-    <div class="nav-btn" onclick="openScreen('pass')"><div>🎫</div>Pass</div>
-    <div class="nav-btn" onclick="openScreen('profile')"><div>👤</div>Profile</div>
-  </div>
-
 </div>
 
+<!-- App Frame -->
+<div class="app-wrap">
+  <div class="app" role="application" aria-label="BrewDash App">
+
+    <!-- Topbar -->
+    <div class="topbar" role="banner">
+      <div class="brand">
+        <div class="logo-small" aria-hidden="true">
+          <svg viewBox="0 0 64 64" width="36" height="36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="6" y="18" width="52" height="30" rx="6" fill="#153A68"/>
+            <rect x="14" y="10" width="36" height="8" rx="4" fill="#29B7A6"/>
+            <circle cx="40" cy="33" r="6" fill="#fff"/>
+          </svg>
+        </div>
+        <div>
+          <h1 style="margin:0;font-size:1rem">BrewDash</h1>
+          <small style="color:var(--teal);font-weight:700">Campus-first tea</small>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div id="campus-chip" class="chip" role="button" aria-controls="campus-screen" title="Open Campus favourites">Campus Favourite</div>
+      </div>
+    </div>
+
+    <!-- Screens -->
+    <div class="screens" role="main">
+
+      <!-- HOME -->
+      <section id="home-screen" class="screen active" aria-labelledby="home-title">
+        <div class="hero">
+          <div class="left">
+            <div class="badge" style="display:inline-block">Campus Fav</div>
+            <h2 id="home-title" style="margin-top:8px">BrewDash — Great Tea for Great Minds</h2>
+            <p class="muted">Fresh tea brewed daily, inspired by tribal recipes. Affordable & campus friendly.</p>
+            <div class="actions" style="margin-top:10px">
+              <div class="btn" onclick="goTo('menu')">See Menu</div>
+              <div class="btn alt" onclick="goTo('pass')" style="margin-left:8px">Buy Pass</div>
+            </div>
+          </div>
+          <div class="hero-art">
+            <div class="cup-blob" aria-hidden="true">
+              <!-- small cup svg -->
+              <svg viewBox="0 0 120 120" width="56" height="56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                  <linearGradient id="a" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#173a5f"/><stop offset="1" stop-color="#153A68"/></linearGradient>
+                  <linearGradient id="b" x1="0" x2="1"><stop offset="0" stop-color="#29B7A6"/><stop offset="1" stop-color="#1fb79f"/></linearGradient>
+                </defs>
+                <rect x="16" y="36" width="88" height="48" rx="10" fill="#fff" stroke="#eef6f8"/>
+                <rect x="28" y="48" width="64" height="28" rx="8" fill="url(#a)"/>
+                <rect x="18" y="28" width="84" height="10" rx="6" fill="url(#b)"/>
+                <circle cx="70" cy="76" r="8" fill="#fff"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><div style="font-weight:800">Today’s Rush</div><div class="muted" style="font-size:0.9rem">Buy before 6 PM for 10% off</div></div>
+              <div class="muted">Open • 8AM–9PM</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+            <h3 style="margin:0">Top Menu</h3>
+            <div class="muted" style="font-size:0.9rem">Most ordered</div>
+          </div>
+
+          <div class="menu-grid" style="margin-top:10px">
+            <!-- sample menu cards -->
+            <div class="menu-card card" data-id="1">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                <div>
+                  <div class="title">Tribal Ada Tea</div>
+                  <div class="muted" style="font-size:0.88rem">Ginger + jaggery — signature no-milk tea</div>
+                  <div class="meta"><span class="badge">Signature</span></div>
+                </div>
+                <div style="text-align:right">
+                  <div class="price">₹35</div>
+                  <div style="margin-top:8px"><button onclick="toggleFav(1)" style="background:none;border:0;cursor:pointer;font-size:18px" aria-label="favorite">&#9825;</button></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="menu-card card" data-id="2">
+              <div style="display:flex;justify-content:space-between">
+                <div>
+                  <div class="title">Kulhad Tea</div>
+                  <div class="muted" style="font-size:0.88rem">Earthen kulhad for aroma</div>
+                </div>
+                <div style="text-align:right">
+                  <div class="price">₹20</div>
+                  <div style="margin-top:8px"><button onclick="toggleFav(2)" style="background:none;border:0;cursor:pointer;font-size:18px" aria-label="favorite">&#9825;</button></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="menu-card card" data-id="3">
+              <div style="display:flex;justify-content:space-between">
+                <div>
+                  <div class="title">Premium Chini Cup</div>
+                  <div class="muted" style="font-size:0.88rem">Sweet cup with premium sugar</div>
+                </div>
+                <div style="text-align:right">
+                  <div class="price">₹25</div>
+                  <div style="margin-top:8px"><button onclick="toggleFav(3)" style="background:none;border:0;cursor:pointer;font-size:18px" aria-label="favorite">&#9825;</button></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="menu-card card" data-id="4">
+              <div style="display:flex;justify-content:space-between">
+                <div>
+                  <div class="title">Masala Strong</div>
+                  <div class="muted" style="font-size:0.88rem">Extra ginger & special masala</div>
+                </div>
+                <div style="text-align:right">
+                  <div class="price">₹18</div>
+                  <div style="margin-top:8px"><button onclick="toggleFav(4)" style="background:none;border:0;cursor:pointer;font-size:18px" aria-label="favorite">&#9825;</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h3 style="margin:6px 0 8px">Why BrewDash?</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="card">
+              <div style="font-weight:800">Freshly brewed</div>
+              <div class="muted">Every cup brewed to order with fresh ingredients</div>
+            </div>
+            <div class="card">
+              <div style="font-weight:800">Campus friendly pricing</div>
+              <div class="muted">Starting at ₹10 — made for students</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- CAMPUS FAVOURITES -->
+      <section id="campus-screen" class="screen" aria-labelledby="campus-title">
+        <h2 id="campus-title">Campus Favourites</h2>
+        <p class="muted">Picked by students near DU Gate.</p>
+
+        <div style="margin-top:12px">
+          <div class="card">
+            <div class="row">
+              <div>
+                <div class="title">Tribal Ada Tea</div>
+                <div class="muted">Signature — ginger & jaggery</div>
+              </div>
+              <div class="price">₹35</div>
+            </div>
+            <div style="margin-top:8px" class="muted">⭐ 4.7 • 4,200+ orders • Loved by professors & founders</div>
+          </div>
+
+          <div class="card">
+            <div class="row">
+              <div>
+                <div class="title">Kulhad Special</div>
+                <div class="muted">Earthen taste — limited cups</div>
+              </div>
+              <div class="price">₹22</div>
+            </div>
+            <div style="margin-top:8px" class="muted">⭐ 4.5 • 2,400+ orders</div>
+          </div>
+
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+            <div class="btn" onclick="goTo('menu')">View Full Menu</div>
+            <div class="btn alt" onclick="goTo('pass')">Get Pass</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MENU (with search + filter + fuller list) -->
+      <section id="menu-screen" class="screen" aria-labelledby="menu-title">
+        <h2 id="menu-title">Menu</h2>
+        <div style="margin-top:8px" class="search card">
+          <svg width="18" viewBox="0 0 24 24" fill="none" style="opacity:.7;margin-right:8px"><path d="M21 21l-4.35-4.35" stroke="#153A68" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input id="searchInput" placeholder="Search tea, kulhad, ada..." oninput="filterMenu()" />
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <div class="badge" style="cursor:pointer" onclick="filterBy('all')">All</div>
+          <div class="badge" style="cursor:pointer" onclick="filterBy('signature')">Signature</div>
+          <div class="badge" style="cursor:pointer" onclick="filterBy('kulhad')">Kulhad</div>
+          <div class="badge" style="cursor:pointer" onclick="filterBy('sweet')">Sweet</div>
+        </div>
+
+        <div id="menuList" style="margin-top:12px">
+          <!-- JS will populate fuller menu -->
+        </div>
+      </section>
+
+      <!-- OFFERS -->
+      <section id="offers-screen" class="screen" aria-labelledby="offers-title">
+        <h2 id="offers-title">Offers</h2>
+        <p class="muted">Daily and exclusive offers for campus.</p>
+
+        <div style="margin-top:12px" class="offers-grid">
+          <div class="card">
+            <div class="row"><div style="font-weight:800">Rush Hour</div><div class="muted">4–6 PM</div></div>
+            <div style="margin-top:8px" class="muted">10% OFF on all teas during rush hours.</div>
+          </div>
+
+          <div class="card">
+            <div class="row"><div style="font-weight:800">Educators' Appreciation</div><div class="muted">Ongoing</div></div>
+            <div style="margin-top:8px" class="muted">20% OFF for professors & university staff (show ID).</div>
+          </div>
+
+          <div class="card">
+            <div class="row"><div style="font-weight:800">Founders’ Fuel</div><div class="muted">Startup</div></div>
+            <div style="margin-top:8px" class="muted">30% OFF on founder passes (verified startups).</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h3 style="margin:6px 0">Subscriptions</h3>
+          <div class="subs-row">
+            <div class="sub-pill"><div style="font-weight:800">Weekly Basic</div><div class="muted">₹49 — 7 cups</div></div>
+            <div class="sub-pill"><div style="font-weight:800">Weekly Kulhad</div><div class="muted">₹99 — 7 kulhad cups</div></div>
+            <div class="sub-pill"><div style="font-weight:800">Monthly Premium</div><div class="muted">₹499 — 30 cups</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PASS -->
+      <section id="pass-screen" class="screen" aria-labelledby="pass-title">
+        <h2 id="pass-title">Tea Pass</h2>
+        <p class="muted">Buy a pass and save. (Demo: no payment integration)</p>
+
+        <div style="margin-top:10px">
+          <div class="card"><div class="row"><div><div style="font-weight:800">Weekly Basic</div><div class="muted">7 cups • valid 7 days</div></div><div class="price">₹49</div></div></div>
+          <div class="card"><div class="row"><div><div style="font-weight:800">Weekly Kulhad</div><div class="muted">7 kulhad cups • 7 days</div></div><div class="price">₹99</div></div></div>
+          <div class="card"><div class="row"><div><div style="font-weight:800">Monthly Premium</div><div class="muted">30 cups • best value</div></div><div class="price">₹499</div></div></div>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <input id="passContact" placeholder="Enter email or phone" style="flex:1;padding:12px;border-radius:12px;border:1px solid rgba(21,58,104,0.06)">
+            <div class="btn" onclick="buyPass()">Get Pass</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="profile-screen" class="screen" aria-labelledby="profile-title">
+        <h2 id="profile-title">Profile</h2>
+        <div style="margin-top:12px" class="profile-grid">
+          <div class="card profile-top">
+            <div class="avatar">BD</div>
+            <div>
+              <div style="font-weight:800">Guest User</div>
+              <div class="muted">Sign in to save passes & orders</div>
+            </div>
+            <div style="margin-left:auto"><div class="muted">Points</div><div style="font-weight:800">120</div></div>
+          </div>
+
+          <div class="card">
+            <div style="font-weight:800">Recent Orders</div>
+            <div class="muted" style="margin-top:8px">No orders yet — order from Menu</div>
+          </div>
+
+          <div class="card">
+            <div style="font-weight:800">Location</div>
+            <div class="muted" style="margin-top:8px">Near DU Gate</div>
+          </div>
+
+          <div class="card">
+            <div style="font-weight:800">Help & Support</div>
+            <div class="muted" style="margin-top:8px">WhatsApp • Instagram • Maps</div>
+          </div>
+        </div>
+      </section>
+
+    </div> <!-- screens -->
+
+    <!-- Floating Action Button -->
+    <div class="fab" role="button" title="Open Menu" onclick="goTo('menu')">☕</div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-wrap" aria-hidden="false">
+      <div class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <div class="tab active" id="nav-home" onclick="goTo('home')">
+          <div>🏠</div><div style="font-size:12px">Home</div><div class="dot"></div>
+        </div>
+        <div class="tab" id="nav-menu" onclick="goTo('menu')">
+          <div>📜</div><div style="font-size:12px">Menu</div><div class="dot"></div>
+        </div>
+        <div class="tab" id="nav-offers" onclick="goTo('offers')">
+          <div>🔥</div><div style="font-size:12px">Offers</div><div class="dot"></div>
+        </div>
+        <div class="tab" id="nav-pass" onclick="goTo('pass')">
+          <div>🎫</div><div style="font-size:12px">Pass</div><div class="dot"></div>
+        </div>
+        <div class="tab" id="nav-profile" onclick="goTo('profile')">
+          <div>👤</div><div style="font-size:12px">Profile</div><div class="dot"></div>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- app -->
+</div> <!-- app-wrap -->
+
 <script>
-function openScreen(id){
-  document.querySelectorAll(".screen").forEach(s => {
-    s.classList.remove("active","exit-left");
+/* Simple app controller */
+const screens = {
+  home: document.getElementById('home-screen'),
+  campus: document.getElementById('campus-screen'),
+  menu: document.getElementById('menu-screen'),
+  offers: document.getElementById('offers-screen'),
+  pass: document.getElementById('pass-screen'),
+  profile: document.getElementById('profile-screen'),
+};
+
+const navTabs = {
+  home: document.getElementById('nav-home'),
+  menu: document.getElementById('nav-menu'),
+  offers: document.getElementById('nav-offers'),
+  pass: document.getElementById('nav-pass'),
+  profile: document.getElementById('nav-profile'),
+};
+
+function showScreen(name){
+  // hide all
+  Object.values(screens).forEach(s => {
+    s.classList.remove('active');
   });
+  // show target
+  screens[name].classList.add('active');
+  // nav active
+  Object.values(navTabs).forEach(n => n.classList.remove('active'));
+  if(navTabs[name]) navTabs[name].classList.add('active');
+  // store last tab
+  try{ localStorage.setItem('brewdash:lastTab', name) }catch(e){}
+}
 
-  document.querySelectorAll(".nav-btn").forEach(n => n.classList.remove("active"));
+function goTo(name){
+  showScreen(name);
+  // small subtle focus scroll to top
+  screens[name].scrollTop = 0;
+}
 
-  document.getElementById(id).classList.add("active");
-  
-  // highlight nav button
-  document.querySelectorAll(".nav-btn").forEach(btn=>{
-    if(btn.innerText.toLowerCase().includes(id)) btn.classList.add("active");
+/* Splash sequence: cinematic 3-stage */
+const splash = document.getElementById('splash');
+const splashTag = document.getElementById('splash-tag');
+
+function runSplash(){
+  // stage timings in ms
+  const stage1 = 900; // logo glow
+  const stage2 = 900; // tagline
+  const stage3 = 900; // steam + hold
+  // show tagline after stage1
+  setTimeout(()=> {
+    splash.classList.add('show');
+  }, stage1);
+  // after stage1+2+3 hide
+  setTimeout(()=> {
+    splash.classList.add('hidden');
+    // ensure removed after transition
+    setTimeout(()=> splash.style.display='none',600);
+    // show last tab if available
+    const last = localStorage.getItem('brewdash:lastTab') || 'home';
+    showScreen(last);
+  }, stage1+stage2+stage3+400);
+}
+
+/* Favorites (persist simple) */
+const favKey = 'brewdash:favs';
+function getFavs(){ try{ return JSON.parse(localStorage.getItem(favKey) || '[]') }catch(e){return []} }
+function saveFavs(arr){ try{ localStorage.setItem(favKey, JSON.stringify(arr)) }catch(e){} }
+
+function toggleFav(id){
+  const favs = getFavs();
+  const idx = favs.indexOf(id);
+  if(idx === -1) favs.push(id);
+  else favs.splice(idx,1);
+  saveFavs(favs);
+  // visual feedback: fill heart
+  updateMenuFavUI();
+}
+
+/* Render full menu on Menu screen */
+const fullMenu = [
+  {id:1,name:'Tribal Ada Tea',price:35,tag:'signature',desc:'Ginger + jaggery — no milk. Signature flavor.',rating:4.7,orders:4200},
+  {id:2,name:'Kulhad Tea',price:20,tag:'kulhad',desc:'Earthen kulhad cup with rustic aroma.',rating:4.5,orders:2400},
+  {id:3,name:'Premium Chini Cup',price:25,tag:'sweet',desc:'Sweet & premium sugar cup.',rating:4.4,orders:1800},
+  {id:4,name:'Masala Strong',price:18,tag:'signature',desc:'Extra ginger & masala.',rating:4.6,orders:3500},
+  {id:5,name:'Green Tea',price:40,tag:'healthy',desc:'Light & refreshing.',rating:4.1,orders:600},
+  {id:6,name:'Cardamom Chai',price:22,tag:'flavoured',desc:'Aromatic cardamom blend.',rating:4.3,orders:1200},
+  {id:7,name:'Iced Kulhad',price:30,tag:'kulhad',desc:'Seasonal — chilled kulhad.',rating:4.2,orders:900}
+];
+
+function renderMenu(list){
+  const out = document.getElementById('menuList');
+  out.innerHTML = '';
+  const favs = getFavs();
+  list.forEach(item=>{
+    const card = document.createElement('div');
+    card.className = 'menu-card card';
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="title">${item.name}</div>
+          <div class="muted" style="font-size:0.88rem;margin-top:6px">${item.desc}</div>
+          <div class="muted" style="margin-top:8px;font-size:0.85rem">⭐ ${item.rating} • ${item.orders}+ orders</div>
+        </div>
+        <div style="text-align:right">
+          <div class="price">₹${item.price}</div>
+          <div style="margin-top:8px">
+            <button onclick="toggleFav(${item.id})" style="background:none;border:0;cursor:pointer;font-size:18px" aria-label="favorite">
+              ${favs.includes(item.id) ? '❤️' : '🤍'}
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    out.appendChild(card);
   });
 }
-</script>
 
+/* update hearts on Home quick list too */
+function updateMenuFavUI(){
+  // re-render menu list to reflect favs
+  const current = document.getElementById('menuList');
+  if(current) renderMenu(fullMenu);
+  // update small top menu hearts (optional)
+  document.querySelectorAll('[data-id]').forEach(el=>{
+    const id = Number(el.getAttribute('data-id'));
+    const btn = el.querySelector('button');
+    if(btn){
+      const favs = getFavs();
+      btn.innerHTML = favs.includes(id) ? '❤️' : '🤍';
+    }
+  });
+}
+
+/* search & filter */
+function filterMenu(){
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  if(!q) renderMenu(fullMenu);
+  else renderMenu(fullMenu.filter(i=> i.name.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q)));
+}
+function filterBy(tag){
+  if(tag === 'all') renderMenu(fullMenu);
+  else renderMenu(fullMenu.filter(i=> i.tag === tag));
+}
+
+/* buy pass demo */
+function buyPass(){
+  const contact = document.getElementById('passContact').value.trim();
+  if(!contact){
+    alert('Enter email or phone to get the pass (demo).');
+    return;
+  }
+  alert('Pass purchase simulated. Thank you! (demo)');
+  goTo('profile');
+}
+
+/* initial setup */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // hide splash then show app
+  runSplash();
+
+  // render full menu
+  renderMenu(fullMenu);
+
+  // campus chip click
+  document.getElementById('campus-chip').addEventListener('click', ()=> goTo('campus'));
+
+  // restore last tab if splash not used
+  const last = localStorage.getItem('brewdash:lastTab');
+  if(last) setTimeout(()=> showScreen(last), 300);
+
+});
+
+/* Ensure accessibility: keyboard nav for bottom tabs */
+Object.keys(navTabs).forEach(key=>{
+  navTabs[key].addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' ') { goTo(key); }
+  });
+});
+</script>
 </body>
 </html>
